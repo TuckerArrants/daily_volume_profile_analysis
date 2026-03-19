@@ -707,7 +707,7 @@ eth_vol_cols = ['eth_poc_touch_time_buckets_v2', "eth_vah_touch_time_buckets_v2"
 
 eth_vol_titles = ["ETH POC Touch in RTH", "ETH VAH Touch in RTH", "ETH VAL Touch in RTH"]
 
-open_1800_and_gap_row = st.columns(len(open_1800_cols) + len(prth_vol_cols) + len(eth_vol_cols))
+open_1800_and_gap_row = st.columns(len(prth_vol_cols) + len(eth_vol_cols))
 
 order = ["IB (1st hour)", "Before Confirmation", "After Confirmation", "Untouched"]
 
