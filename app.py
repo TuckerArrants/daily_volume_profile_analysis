@@ -709,8 +709,7 @@ eth_vol_titles = ["ETH POC Touch in RTH", "ETH VAH Touch in RTH", "ETH VAL Touch
 
 open_1800_and_gap_row = st.columns(len(prth_vol_cols) + len(eth_vol_cols))
 
-order = ["IB (1st hour)", "Before Confirmation", "After Confirmation", "Untouched"]
-
+order = ["IB Formation", "Before IB Break", "After IB Break", "Untouched"]
 for idx, col in enumerate(prth_vol_cols):
     # 1) drop any actual None/NaN values so they never even show up
     series = df_filtered[col].fillna("Untouched")
