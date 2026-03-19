@@ -696,14 +696,8 @@ for j, col in enumerate(conf_direction_cols):
     all_cols[offset2 + j].plotly_chart(fig, use_container_width=True)
 
 #########################################################
-### 18:00 Hits
+### Touch Times
 #########################################################
-open_1800_cols = [
-    "open_1800_rdr_touch_time_buckets_v2", 
-]
-open_1800_titles = [
-    "18:00 Open Hit in RTH"
-]
 
 prth_vol_cols = ['prev_rth_poc_rdr_touch_time_buckets_v2', "prev_rth_vah_rdr_touch_time_buckets_v2", "prev_rth_val_rdr_touch_time_buckets_v2"]
 
@@ -716,37 +710,6 @@ eth_vol_titles = ["ETH POC Touch in RTH", "ETH VAH Touch in RTH", "ETH VAL Touch
 open_1800_and_gap_row = st.columns(len(open_1800_cols) + len(prth_vol_cols) + len(eth_vol_cols))
 
 order = ["IB (1st hour)", "Before Confirmation", "After Confirmation", "Untouched"]
-
-for idx, col in enumerate(open_1800_cols):
-    # 1) drop any actual None/NaT values
-    series = df_filtered[col].fillna("Untouched")
-
-    # 2) normalized counts, *then* reindex into your three‐bucket order
-    counts = (
-        series
-        .value_counts(normalize=True)
-        .reindex(order, fill_value=0)
-    )
-
-    # 4) turn into percentages
-    perc = counts * 100
-    perc = perc[perc > 0]
-
-    # now build the bar‐chart
-    fig = px.bar(
-        x=perc.index,
-        y=perc.values,
-        text=[f"{v:.1f}%" for v in perc.values],
-        title=open_1800_titles[idx],
-        labels={"x": "", "y": ""},
-    )
-    fig.update_traces(textposition="outside")
-    fig.update_layout(
-        xaxis_tickangle=90,
-        margin=dict(l=10,r=10,t=30,b=10),
-        yaxis=dict(showticklabels=False))
-
-    open_1800_and_gap_row[idx].plotly_chart(fig, use_container_width=True)
 
 for idx, col in enumerate(prth_vol_cols):
     # 1) drop any actual None/NaN values so they never even show up
@@ -777,7 +740,7 @@ for idx, col in enumerate(prth_vol_cols):
         margin=dict(l=10,r=10,t=30,b=10),
         yaxis=dict(showticklabels=False))
 
-    open_1800_and_gap_row[idx + len(open_1800_cols)].plotly_chart(fig, use_container_width=True)
+    open_1800_and_gap_row[idx].plotly_chart(fig, use_container_width=True)
 
 for idx, col in enumerate(eth_vol_cols):
     # 1) drop any actual None/NaN values so they never even show up
@@ -808,7 +771,7 @@ for idx, col in enumerate(eth_vol_cols):
         margin=dict(l=10,r=10,t=30,b=10),
         yaxis=dict(showticklabels=False))
 
-    open_1800_and_gap_row[idx + len(open_1800_cols) +  len(prth_vol_cols)].plotly_chart(fig, use_container_width=True)
+    open_1800_and_gap_row[idx +  len(prth_vol_cols)].plotly_chart(fig, use_container_width=True)
 
 #########################################################
 ### Models Graphs
