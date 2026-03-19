@@ -16,7 +16,7 @@ def load_data_for_instrument(instrument: str) -> pd.DataFrame:
     owner  = "TuckerArrants"
     repo   = "daily_volume_profile_analysis"
     branch = "main"
-    path   = f"{instrument}_Session_Data_Final_From_2008_V2.csv"
+    path   = f"{instrument}_Session_Data_Final_From_2008_V2_Cleaned.csv"
     
     url = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{path}"
     
