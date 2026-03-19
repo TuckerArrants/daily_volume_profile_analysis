@@ -329,9 +329,12 @@ selected_day = st.sidebar.selectbox("Day of Week", day_options, key="selected_da
 
 min_date = df["date"].min().date()
 max_date = df["date"].max().date()
+
+if "date_range" not in st.session_state:
+    st.session_state["date_range"] = (min_date, max_date)
+
 start_date, end_date = st.sidebar.date_input(
     "Select date range:",
-    value=(min_date, max_date),
     min_value=min_date,
     max_value=max_date,
     key="date_range"
