@@ -56,7 +56,7 @@ def extract_time(df, time_cols=None):
         df[f"{col}_hm"] = df[col].dt.strftime("%H:%M").fillna("")
     return df
 
-def bucket_prev_close_touch(df,
+def bucket_touch_times(df,
                             touch_col="prev_close_1555_rdr_touch",
                             conf_col="rdr_conf_time",
                             session=None):  # ← add this
@@ -93,14 +93,13 @@ def bucket_prev_close_touch(df,
 
     conds = [
         touch_hr < threshold,
-        (touch_hr >= threshold) & (touch_hr < conf_hr),
-        touch_hr >= conf_hr,
+        touch_hr >= threshold,
     ]
-    choices = ["box_formation", "before_confirmation", "after_confirmation"]
+    choices = ["box_formation", "after_box_formation"]
 
     df[f"{touch_col}_time_buckets_v2"] = np.select(conds, choices, default=None)
     return df
-                              
+           
 BUCKETS = [
     ("RTH-Globex",  "16:00", "16:55"),
     ("Globex","18:00", "19:25"),
@@ -267,15 +266,15 @@ df = extract_time(df)
 df = get_hod_lod(df)
 df = add_open_vs_flags(df)
 
-df = bucket_prev_close_touch(df, touch_col='prev_rth_poc_rdr_touch', conf_col='rdr_conf_time')
-df = bucket_prev_close_touch(df, touch_col='prev_rth_vah_rdr_touch', conf_col='rdr_conf_time')
-df = bucket_prev_close_touch(df, touch_col='prev_rth_val_rdr_touch', conf_col='rdr_conf_time')
+df = bucket_touch_times(df, touch_col='prev_rth_poc_rdr_touch', conf_col='rdr_conf_time')
+df = bucket_touch_times(df, touch_col='prev_rth_vah_rdr_touch', conf_col='rdr_conf_time')
+df = bucket_touch_times(df, touch_col='prev_rth_val_rdr_touch', conf_col='rdr_conf_time')
 
-df = bucket_prev_close_touch(df, touch_col='eth_val_touch',  conf_col='rdr_conf_time', session='rdr')
-df = bucket_prev_close_touch(df, touch_col='eth_vah_touch',  conf_col='rdr_conf_time', session='rdr')
-df = bucket_prev_close_touch(df, touch_col='eth_poc_touch',  conf_col='rdr_conf_time', session='rdr')
+df = bucket_touch_times(df, touch_col='eth_val_touch',  conf_col='rdr_conf_time', session='rdr')
+df = bucket_touch_times(df, touch_col='eth_vah_touch',  conf_col='rdr_conf_time', session='rdr')
+df = bucket_touch_times(df, touch_col='eth_poc_touch',  conf_col='rdr_conf_time', session='rdr')
 
-df = bucket_prev_close_touch(df, touch_col='open_1800_rdr_touch', conf_col='rdr_conf_time')
+df = bucket_touch_times(df, touch_col='open_1800_rdr_touch', conf_col='rdr_conf_time')
 
 df = get_rth_open_pos(df)
 df = get_prth_to_rth_model(df)
@@ -301,8 +300,7 @@ rename_map = {'pre_adr' : 'Globex-Asia',
               'long' : 'Long',
               'short' : 'Short',   
               'box_formation' : 'IB Formation',
-              'before_confirmation' : 'Before IB Break',
-              'after_confirmation' : 'After IB Break',
+              'after_box_formation' : 'After IB',
               'above' : 'Above',
               'below' : 'Below',
               'inside' : 'Inside',
@@ -712,7 +710,7 @@ eth_vol_titles = ["ETH POC Touch in RTH", "ETH VAH Touch in RTH", "ETH VAL Touch
 
 open_1800_and_gap_row = st.columns(len(prth_vol_cols) + len(eth_vol_cols))
 
-order = ["IB Formation", "Before IB Break", "After IB Break", "Untouched"]
+order = ["IB Formation", "After IB", "Untouched"]
 for idx, col in enumerate(prth_vol_cols):
     # 1) drop any actual None/NaN values so they never even show up
     series = df_filtered[col].fillna("Untouched")
