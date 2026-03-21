@@ -998,47 +998,6 @@ for idx, col in enumerate(model_cols):
 
     row1[idx].plotly_chart(fig, use_container_width=True)
 
-#########################################################
-### RDR Box Highs/Lows
-#########################################################
-time_cols = [
-    "rdr_dr_high_time_hm",
-    "rdr_dr_low_time_hm",
-]
-time_titles = [
-    "RTH IB High Time",
-    "RTH IB Low Time",
-]
-time_order = pd.date_range("09:30", "10:25", freq="5min").strftime("%H:%M")
-
-row3 = st.columns(2)
-for idx, col in enumerate(time_cols):
-    if col in df_filtered:
-        counts = (
-            df_filtered[col]
-            .value_counts(normalize=True) 
-            .reindex(time_order, fill_value=0)
-        )
-        perc = counts * 100
-        perc = perc[perc > 0]
-        
-        fig = px.bar(
-            x=perc.index,
-            y=perc.values,
-            text=[f"{v:.1f}%" for v in perc.values],
-            labels={"x": "", "y": ""},
-            title=time_titles[idx],
-        )
-        fig.update_traces(textposition="outside")
-        fig.update_layout(
-            xaxis_tickangle=90,
-            yaxis=dict(showticklabels=False),
-            xaxis={"categoryorder": "array", "categoryarray": list(perc.index)},
-            margin=dict(l=10, r=10, t=30, b=10),
-        )
-
-        row3[idx].plotly_chart(fig, use_container_width=True)
-
 ######################################
 ### HoD-LoD
 ######################################
