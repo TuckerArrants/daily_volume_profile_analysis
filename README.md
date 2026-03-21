@@ -2,9 +2,7 @@
 
 A Streamlit dashboard for analyzing intraday price structure in futures markets using Volume Profile and Market Profile concepts pioneered by **J. Peter Steidlmayer**.
 
-Built from raw OHLC data in Python. No proprietary data feeds or platform dependencies required.
-
-![Dashboard](screenshot.png)
+Built from raw OHLCV data in Python. Value Areas / POCs are approximated from OHLCV minute-bar data using a uniform volume distribution assumption across each bar's price range.
 
 ---
 
