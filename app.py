@@ -1002,6 +1002,8 @@ for idx, col in enumerate(model_cols):
 ### HoD-LoD
 ######################################
 
+time_order = pd.date_range("09:30", "10:25", freq="5min").strftime("%H:%M")
+
 # Build order-insensitive cycle_pair from hod & lod
 if ("hod_v2" in df_filtered.columns) and ("lod_v2" in df_filtered.columns):
     tmp = df_filtered[["hod_v2", "lod_v2"]].astype(str).copy()
