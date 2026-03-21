@@ -20,7 +20,6 @@ This tool computes and visualizes statistical distributions of price behavior re
 - Touch rates for ETH POC, VAH, VAL during RTH
 
 **Initial Balance**
-- IB High and Low time distributions
 - IB True Rate across Asia, London, and RTH sessions
 - IB Color (directional bias) per session
 - IB Break Direction per session
