@@ -78,64 +78,7 @@ All charts respond to the following filters:
 
 J. Peter Steidlmayer developed Market Profile in the 1980s in collaboration with the Chicago Board of Trade (CBOT). His framework treats price as an auction process unfolding across time, with the Value Area — the range containing 70% of a session's volume — representing the zone of accepted value.
 
-His **80% rule** holds that when price opens outside a prior Value Area and rotates back inside it, there is approximately an 80% probability of traversing to the opposite boundary.
-
-This project quantifies that and related behaviors empirically, extending the framework across session handoffs (ETH → RTH, Asia → London → RTH) and measuring extensions in volatility-normalized units rather than fixed price distances.
-
----
-
-## Installation
-
-```bash
-git clone https://github.com/yourusername/volume-profile-stats.git
-cd volume-profile-stats
-pip install -r requirements.txt
-```
-
-### Requirements
-
-- Python 3.10+
-- streamlit
-- pandas
-- numpy
-- plotly
-
----
-
-## Data Format
-
-The app expects raw OHLC data as a CSV with the following columns:
-
-```
-datetime, open, high, low, close, volume
-```
-
-- `datetime` should be timezone-aware or consistently in ET
-- Minute-bar resolution recommended
-- ETH session: 18:00–09:30 ET
-- RTH session: 09:30–16:00 ET
-
-A minimum of 1–2 years of history is recommended for meaningful distributions.
-
----
-
-## Usage
-
-```bash
-streamlit run app.py
-```
-
-Upload your OHLC CSV via the sidebar, select your instrument and date range, and apply filters to segment the distributions.
-
----
-
-## Roadmap
-
-- [ ] Multi-instrument support (NQ, CL, GC)
-- [ ] CSV export of filtered distributions
-- [ ] Extension target hit rate tables
-- [ ] Percentile overlays on histograms
-- [ ] Automated session classification
+This project explores these value areas, extending the framework across session handoffs (ETH → RTH, Asia → London → RTH) and measuring extensions in volatility-normalized units rather than fixed price distances.
 
 ---
 
@@ -144,9 +87,3 @@ Upload your OHLC CSV via the sidebar, select your instrument and date range, and
 - Steidlmayer, J. P. & Koy, K. (1986). *Markets and Market Logic.* Chicago: Porcupine Press.
 - Dalton, J., Jones, E., & Dalton, R. (1990). *Mind Over Markets.* Chicago: Probus.
 - Steidlmayer, J. P. (2003). *Steidlmayer on Markets: Trading with Market Profile.* Wiley.
-
----
-
-## License
-
-MIT
