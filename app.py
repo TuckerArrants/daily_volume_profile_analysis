@@ -245,7 +245,7 @@ def get_rth_open_pos_to_eth_va(df):
     df['rdr_open_to_eth_va'] = 'inside'
     df.loc[df['rdr_open'] > df['eth_vah'], 'rdr_open_to_eth_va'] = 'above'
     df.loc[df['rdr_open'] < df['eth_val'],  'rdr_open_to_eth_va'] = 'below'
-    return df
+    return df 
 
 def get_prth_to_rth_model(df):
     df['prth_to_rth_model'] = 'inside'
