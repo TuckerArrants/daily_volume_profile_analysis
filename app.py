@@ -1010,94 +1010,6 @@ st.caption(
     "PRTH-normalized values tend to be smaller as the PRTH VA range is typically wider than ETH."
 )
 
-######################################
-### HoD-LoD
-######################################
-
-time_order = pd.date_range("09:30", "10:25", freq="5min").strftime("%H:%M")
-
-# Build order-insensitive cycle_pair from hod & lod
-if ("hod_v2" in df_filtered.columns) and ("lod_v2" in df_filtered.columns):
-    tmp = df_filtered[["hod_v2", "lod_v2"]].astype(str).copy()
-
-    df_filtered["cycle_pair_v2"] = (
-        pd.Series(
-            ["-".join(sorted(pair)) for pair in tmp.to_numpy()],
-            index=df_filtered.index
-        )
-    )
-
-    # Normalized counts → %
-    counts = df_filtered["cycle_pair_v2"].value_counts(normalize=True)
-    perc = (counts * 100)
-
-    # Optional: drop zero (not really needed here, but matches your style)
-    perc = perc[perc > 0]
-
-    # Optional: order bars (choose ONE)
-    # 1) by frequency (default)
-    perc = perc.sort_values(ascending=False)
-
-    # 2) or alphabetical
-    # perc = perc.sort_index()
-
-    fig = px.bar(
-        x=perc.index,
-        y=perc.values,
-        text=[f"{v:.1f}%" for v in perc.values],
-        labels={"x": "", "y": ""},
-        title="HoD-LoD Pair",
-    )
-    fig.update_traces(textposition="outside")
-    fig.update_layout(
-        height=750,
-        xaxis_tickangle=90,
-        yaxis=dict(showticklabels=False),
-        xaxis={"categoryorder": "array", "categoryarray": list(time_order)},
-        margin=dict(l=10, r=10, t=30, b=10),
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-
-#########################################################
-### PRTH To RTH Models
-#########################################################
-rth_model_cols = [
-    "prth_to_rth_model",]
-
-rth_model_titles = [
-    "PRTH-RTH Model"]
-
-row1 = st.columns(len(rth_model_cols))
-for idx, col in enumerate(rth_model_cols):
-    # 1) drop any actual None/NaN values so they never even show up
-    series = df_filtered[col].dropna() 
-
-    # 2) get normalized counts
-    counts = series.value_counts(normalize=True)
-
-    # 3) if you still have the string "None" in your index, drop it
-    counts = counts.drop("None", errors="ignore")
-
-    # 4) turn into percentages
-    perc = counts * 100
-    perc = perc[perc > 0]
-
-    # now build the bar‐chart
-    fig = px.bar(
-        x=perc.index,
-        y=perc.values,
-        text=[f"{v:.1f}%" for v in perc.values],
-        title=rth_model_titles[idx],
-        labels={"x": "", "y": ""},
-    )
-    fig.update_traces(textposition="outside")
-    fig.update_layout(
-        xaxis_tickangle=0,
-        margin=dict(l=10,r=10,t=30,b=10),
-        yaxis=dict(showticklabels=False))
-
-    row1[idx].plotly_chart(fig, use_container_width=True)
 
 #########################################################
 ### RTH Open Position 
@@ -1141,6 +1053,47 @@ for idx, col in enumerate(rth_open_cols):
         yaxis=dict(showticklabels=False))
 
     row1[idx].plotly_chart(fig, use_container_width=True)
+
+#########################################################
+### PRTH To RTH Models
+#########################################################
+rth_model_cols = [
+    "prth_to_rth_model",]
+
+rth_model_titles = [
+    "PRTH-RTH Model"]
+
+row1 = st.columns(len(rth_model_cols))
+for idx, col in enumerate(rth_model_cols):
+    # 1) drop any actual None/NaN values so they never even show up
+    series = df_filtered[col].dropna() 
+
+    # 2) get normalized counts
+    counts = series.value_counts(normalize=True)
+
+    # 3) if you still have the string "None" in your index, drop it
+    counts = counts.drop("None", errors="ignore")
+
+    # 4) turn into percentages
+    perc = counts * 100
+    perc = perc[perc > 0]
+
+    # now build the bar‐chart
+    fig = px.bar(
+        x=perc.index,
+        y=perc.values,
+        text=[f"{v:.1f}%" for v in perc.values],
+        title=rth_model_titles[idx],
+        labels={"x": "", "y": ""},
+    )
+    fig.update_traces(textposition="outside")
+    fig.update_layout(
+        xaxis_tickangle=0,
+        margin=dict(l=10,r=10,t=30,b=10),
+        yaxis=dict(showticklabels=False))
+
+    row1[idx].plotly_chart(fig, use_container_width=True)
+
 
 
 st.caption(f"Sample size: {len(df_filtered):,} rows")
