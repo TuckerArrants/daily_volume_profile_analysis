@@ -1099,6 +1099,50 @@ for idx, col in enumerate(rth_model_cols):
 
     row1[idx].plotly_chart(fig, use_container_width=True)
 
+#########################################################
+### RTH Open Position 
+#########################################################
+rth_open_cols = [
+    "rdr_open_to_prth_va",
+    "rdr_open_to_eth_va",]
+
+rth_open_titles = [
+    "RTH Open to PRTH VA Position",
+    "RTH Open To ETH VA Position",
+    ]
+
+row1 = st.columns(len(rth_open_cols))
+for idx, col in enumerate(rth_open_cols):
+    # 1) drop any actual None/NaN values so they never even show up
+    series = df_filtered[col].dropna() 
+
+    # 2) get normalized counts
+    counts = series.value_counts(normalize=True)
+
+    # 3) if you still have the string "None" in your index, drop it
+    counts = counts.drop("None", errors="ignore")
+
+    # 4) turn into percentages
+    perc = counts * 100
+    perc = perc[perc > 0]
+
+    # now build the bar‐chart
+    fig = px.bar(
+        x=perc.index,
+        y=perc.values,
+        text=[f"{v:.1f}%" for v in perc.values],
+        title=rth_open_titles[idx],
+        labels={"x": "", "y": ""},
+    )
+    fig.update_traces(textposition="outside")
+    fig.update_layout(
+        xaxis_tickangle=0,
+        margin=dict(l=10,r=10,t=30,b=10),
+        yaxis=dict(showticklabels=False))
+
+    row1[idx].plotly_chart(fig, use_container_width=True)
+
+
 st.caption(f"Sample size: {len(df_filtered):,} rows")
 
 session_date_df = df_filtered['session_date']
