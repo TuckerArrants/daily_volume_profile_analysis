@@ -377,10 +377,10 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
             fig.add_annotation(
                 x=val,
                 y=pct,
-                text=f"  {val:.2f}",
+                text=f"{val:.2f}  ",
                 showarrow=False,
                 font=dict(size=11, color=color),
-                xanchor="left",
+                xanchor="right" if pct == 0.20 else "left",
                 yanchor="bottom" if pct == 0.20 else "middle",
                 yshift=5 if pct == 0.20 else 0,
                 row=cfg["row"], col=cfg["col"],
@@ -390,7 +390,6 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
         height=700,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#cccccc", size=12),
         margin=dict(t=60, b=40, l=50, r=30),
     )
 
