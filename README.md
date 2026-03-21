@@ -2,8 +2,8 @@
 
 A Streamlit dashboard for analyzing intraday price structure in futures markets using Volume Profile and Market Profile concepts pioneered by **J. Peter Steidlmayer**.
 
-Built from raw OHLCV data in Python. Value Areas / POCs are approximated from OHLCV minute-bar data using a uniform volume distribution assumption across each bar's price range.
-
+Note on Volume Profile Approximation
+True volume profile requires tick or time-and-sales data to know exactly which prices traded what volume. This project uses OHLCV minute-bar data only. Volume for each bar is distributed evenly across its high-low range, treating all price levels within the bar as equally likely. This is a known approximation. POC and VA boundaries derived this way are consistent with tick-based profiles in most market conditions but will diverge on bars with wide ranges or unusual intrabar price action, but for this project, this approximation is sufficiently accurate. 
 ---
 
 ## What It Does
