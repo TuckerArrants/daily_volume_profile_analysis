@@ -201,34 +201,6 @@ def bucket_hm_series(hm: pd.Series, default="NO") -> pd.Series:
     out.loc[mins.isna()] = np.nan
     return out
 
-def get_hod_lod(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.copy()
-
-    high_cols = [c for c in df.columns if c.endswith("_high") and "prev" not in c]
-    low_cols  = [c for c in df.columns if c.endswith("_low")  and "prev" not in c]
-
-    # 1) 5m HOD/LOD price
-    df["hod_price"] = df[high_cols].max(axis=1)
-    df["lod_price"] = df[low_cols].min(axis=1)
-
-    # 2) which segment gave us that HOD/LOD?
-    df["hod"] = (
-        df[high_cols].idxmax(axis=1).str.replace(r"_high$", "", regex=True)
-    )
-    df["lod"] = (
-        df[low_cols].idxmin(axis=1).str.replace(r"_low$", "", regex=True)
-    )
-
-    # 3) pull the corresponding hh:mm field for that chosen segment
-    df["hod_hm"] = df.apply(lambda r: r.get(f"{r['hod']}_high_time_hm", np.nan), axis=1)
-    df["lod_hm"] = df.apply(lambda r: r.get(f"{r['lod']}_low_time_hm",  np.nan), axis=1)
-
-    # 4) bucket them
-    df["hod_v2"] = bucket_hm_series(df["hod_hm"], default="NO")
-    df["lod_v2"] = bucket_hm_series(df["lod_hm"], default="NO")
-
-    return df
-
 def get_rth_open_pos(df):
     df['rdr_to_prdr_open'] = 'inside'
     df.loc[df['rdr_open'] > df['prev_rdr_high'], 'rdr_to_prdr_open'] = 'above'
@@ -429,7 +401,6 @@ df = load_data_for_instrument(selected_instrument)
 
 df['date'] = pd.to_datetime(df['session_date']).dt.date
 df = extract_time(df)
-df = get_hod_lod(df)
 df = add_open_vs_flags(df)
 
 df = bucket_touch_times(df, touch_col='prev_rth_poc_rdr_touch', conf_col='rdr_conf_time')
@@ -479,7 +450,7 @@ rename_map = {'pre_adr' : 'Globex-Asia',
 categorical_cols = [
     "prev_rdr_to_adr_model", "adr_to_odr_model", "odr_to_rdr_model",
     "rdr_to_prdr_open", "rdr_open_to_prth_va", "rdr_open_to_eth_va",
-    "prth_to_rth_model", "hod_v2", "lod_v2",
+    "prth_to_rth_model",
     "prev_rdr_box_color", "adr_box_color", "odr_box_color", "rdr_box_color",
     "prev_rdr_conf_direction", "adr_conf_direction", "odr_conf_direction", "rdr_conf_direction",
     "prev_rdr_conf_valid", "adr_conf_valid", "odr_conf_valid", "rdr_conf_valid",
@@ -536,31 +507,12 @@ rdr_open_to_eth_va = st.sidebar.selectbox("RTH Open To ETH Value Area",
                                              key="rdr_open_to_eth_va_filter")
 
 
-st.sidebar.markdown("### HoD - LoD (Session Buckets)") 
-hod_options = ["All"] + sorted(df["hod_v2"].dropna().unique())
-lod_options = ["All"] + sorted(df["lod_v2"].dropna().unique())
-
-selected_hod = st.sidebar.selectbox(
-    "HoD",
-    options=hod_options,
-    key="selected_hod"
-)
-
-selected_lod = st.sidebar.selectbox(
-    "LoD",
-    options=lod_options,
-    key="selected_lod"
-)
-
 #########################################
 ### Resets
 #########################################
 default_filters = {
     "selected_day":                       "All",
     "date_range":                 (min_date, max_date),
-
-    "selected_hod" : "All",
-    "selected_lod" : "All",
 
     "prdr_to_adr_model_filter" : [],
     "adr_to_rdr_model_filter" : [],
@@ -770,13 +722,6 @@ df_filtered = df_filtered[
     (df_filtered["date"] >= pd.to_datetime(start_date)) &
     (df_filtered["date"] <= pd.to_datetime(end_date))
 ]
-
-# — HoD / LoD —
-if selected_hod != "All":
-    df_filtered = df_filtered[df_filtered["hod_v2"] == selected_hod]
-
-if selected_lod != "All":
-    df_filtered = df_filtered[df_filtered["lod_v2"] == selected_lod]
 
 for col, state_key in inclusion_map.items():
     sel = st.session_state[state_key]
