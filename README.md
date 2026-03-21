@@ -26,8 +26,6 @@ This tool computes and visualizes statistical distributions of price behavior re
 - Session IB model comparisons: PRTH→Asia, Asia→London, London→RTH
 
 **Session Structure**
-- HoD / LoD session bucket distributions
-- HoD-LoD pair analysis
 - PRTH→RTH model classification
 
 **Extension Measurement**
