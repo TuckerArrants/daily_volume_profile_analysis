@@ -381,7 +381,8 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
                 showarrow=False,
                 font=dict(size=11, color=color),
                 xanchor="left",
-                xshift=8 if pct == 0.20 else 0,
+                yanchor="bottom" if pct == 0.20 else "middle",
+                yshift=5 if pct == 0.20 else 0,
                 row=cfg["row"], col=cfg["col"],
             )
 
