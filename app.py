@@ -999,6 +999,18 @@ for idx, col in enumerate(model_cols):
     row1[idx].plotly_chart(fig, use_container_width=True)
 
 ######################################
+### VA extensions
+######################################
+
+st.subheader("Value Area Extension Distributions")
+plot_va_extensions(df_filtered)
+st.caption(
+    "Extensions are normalized by the reference VA range. "
+    "A value of 0 indicates RTH price did not trade beyond the POC in that direction. "
+    "PRTH-normalized values tend to be smaller as the PRTH VA range is typically wider than ETH."
+)
+
+######################################
 ### HoD-LoD
 ######################################
 
@@ -1086,14 +1098,6 @@ for idx, col in enumerate(rth_model_cols):
         yaxis=dict(showticklabels=False))
 
     row1[idx].plotly_chart(fig, use_container_width=True)
-
-st.subheader("Value Area Extension Distributions")
-plot_va_extensions(df_filtered)
-st.caption(
-    "Extensions are normalized by the reference VA range. "
-    "A value of 0 indicates RTH price did not trade beyond the POC in that direction. "
-    "PRTH-normalized values tend to be smaller as the PRTH VA range is typically wider than ETH."
-)
 
 st.caption(f"Sample size: {len(df_filtered):,} rows")
 
