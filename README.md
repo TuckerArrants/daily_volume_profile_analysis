@@ -69,8 +69,7 @@ All charts respond to the following filters:
 - **Date Range**
 - **RTH Open Relative to PRTH VA** — above VAH, inside, below VAL
 - **RTH Open Relative to ETH VA** — above VAH, inside, below VAL
-- **HoD Session Bucket** — which session made the high of day
-- **LoD Session Bucket** — which session made the low of day
+- **HoD /LoD Session Bucket** — which session made the high of day / low of day (which is only known after the fact, so used for making assumptions and checking distributions)
 
 ---
 
