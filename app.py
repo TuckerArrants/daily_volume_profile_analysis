@@ -435,6 +435,23 @@ df = get_prth_to_rth_model(df)
 df = get_rth_open_pos_to_prth_va(df)
 df = get_rth_open_pos_to_eth_va(df)
 
+categorical_cols = [
+    "prev_rdr_to_adr_model", "adr_to_odr_model", "odr_to_rdr_model",
+    "rdr_to_prdr_open", "rdr_open_to_prth_va", "rdr_open_to_eth_va",
+    "prth_to_rth_model", "hod_v2", "lod_v2",
+    "prev_rdr_box_color", "adr_box_color", "odr_box_color", "rdr_box_color",
+    "prev_rdr_conf_direction", "adr_conf_direction", "odr_conf_direction", "rdr_conf_direction",
+    "prev_rdr_conf_valid", "adr_conf_valid", "odr_conf_valid", "rdr_conf_valid",
+    "prev_rth_poc_rdr_touch_time_buckets_v2", "prev_rth_vah_rdr_touch_time_buckets_v2",
+    "prev_rth_val_rdr_touch_time_buckets_v2", "eth_poc_touch_time_buckets_v2",
+    "eth_vah_touch_time_buckets_v2", "eth_val_touch_time_buckets_v2",
+    "open_1800_rdr_touch_time_buckets_v2",
+]
+
+for col in categorical_cols:
+    if col in df.columns:
+        df[col] = df[col].replace(rename_map)
+
 df = calculate_va_extensions(
     df,
     va_high_col="prev_rth_vah",
@@ -450,38 +467,6 @@ df = calculate_va_extensions(
     poc_col="eth_poc",
     prefix="eth",
 )
-
-rename_map = {'pre_adr' : 'Globex-Asia',
-              'adr' : 'Asia',
-              'adr_transition' : 'Asia-London',
-              'odr' : 'London',
-              'odr_transition' : 'London-RTH',
-              'rdr' : 'RTH',
-              'untouched' : 'Untouched',
-              'uxp' : 'Upside',
-              'ux' : 'Upside',
-              'u' : 'Upside',
-              'dxp' : 'Downside',
-              'dx' : 'Downside',
-              'd' : 'Downside',
-              'rx' : 'Engulfing',
-              'rc' : 'Inside',
-              'none' : 'None',
-              'long' : 'Long',
-              'short' : 'Short',   
-              'box_formation' : 'IB Formation',
-              'after_box_formation' : 'After IB',
-              'above' : 'Above',
-              'below' : 'Below',
-              'inside' : 'Inside',
-              'upside' : 'Upside',
-              'downside' : 'Downside',
-              'upside_gap' : 'Upside Gap',
-              'downside_gap' : 'Downside Gap',
-              'outside' : 'Outside'
-} 
-
-df = df.replace(rename_map)
 
 # 1) Make sure 'date' is a datetime column
 if "date" in df.columns:
