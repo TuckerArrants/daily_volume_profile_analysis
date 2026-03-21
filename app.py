@@ -282,36 +282,6 @@ def get_prth_to_rth_model(df):
 
     return df
 
-#############################################
-### VA Extensions Functions
-#############################################
-def calculate_va_extensions(
-    df: pd.DataFrame,
-    va_high_col: str,
-    va_low_col: str,
-    poc_col: str,
-    prefix: str,
-    high_col: str = "rdr_high",
-    low_col: str = "rdr_low",
-) -> pd.DataFrame:
-   
-    p = f"{prefix}_"
-    va_range = df[va_high_col] - df[va_low_col]
-
-    # Raw point extensions
-    df[f"{p}ext_above_poc_pts"] = df[high_col] - df[poc_col]
-    df[f"{p}ext_below_poc_pts"] = df[poc_col] - df[low_col]
-    df[f"{p}ext_above_vah_pts"] = (df[high_col] - df[va_high_col]).clip(lower=0)
-    df[f"{p}ext_below_val_pts"] = (df[va_low_col] - df[low_col]).clip(lower=0)
-
-    # VA-normalized extensions
-    df[f"{p}ext_above_poc_va"] = df[f"{p}ext_above_poc_pts"] / va_range
-    df[f"{p}ext_below_poc_va"] = df[f"{p}ext_below_poc_pts"] / va_range
-    df[f"{p}ext_above_vah_va"] = df[f"{p}ext_above_vah_pts"] / va_range
-    df[f"{p}ext_below_val_va"] = df[f"{p}ext_below_val_pts"] / va_range
-
-    return df
-
 def plot_va_extensions(df: pd.DataFrame) -> None:
     """
     Plot 4 ECDF distributions of VA extensions with 20/50/80 percentile markers.
@@ -1156,10 +1126,10 @@ for idx, col in enumerate(rth_model_cols):
 
     row1[idx].plotly_chart(fig, use_container_width=True)
 
-st.caption(f"Sample size: {len(df_filtered):,} rows")
-
 st.subheader("VA Extension Distributions")
 plot_va_extensions(df_filtered)
+
+st.caption(f"Sample size: {len(df_filtered):,} rows")
 
 session_date_df = df_filtered['session_date']
 csv = session_date_df.to_csv(index=False).encode("utf-8")
