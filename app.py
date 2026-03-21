@@ -19,14 +19,30 @@ def load_data_for_instrument(instrument: str) -> pd.DataFrame:
     repo   = "daily_volume_profile_analysis"
     branch = "main"
     path   = f"{instrument}_Session_Data_Final_From_2008_V2_Cleaned.csv"
-    
-    url = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{path}"
-    
+    url    = f"https://raw.githubusercontent.com/{owner}/{repo}/{branch}/{path}"
+
     try:
-        return pd.read_csv(url)
+        df = pd.read_csv(url)
     except Exception as e:
         st.error(f"Couldn't load {path}: {e}")
         return pd.DataFrame()
+
+    # Compute extensions here so they're baked into the cache
+    df = calculate_va_extensions(
+        df,
+        va_high_col="prev_rth_vah",
+        va_low_col="prev_rth_val",
+        poc_col="prev_rth_poc",
+        prefix="prth",
+    )
+    df = calculate_va_extensions(
+        df,
+        va_high_col="eth_vah",
+        va_low_col="eth_val",
+        poc_col="eth_poc",
+        prefix="eth",
+    )
+    return df
 
 def add_open_vs_flags(df):
     df = df.copy()
@@ -481,21 +497,6 @@ for col in categorical_cols:
     if col in df.columns:
         df[col] = df[col].replace(rename_map)
 
-df = calculate_va_extensions(
-    df,
-    va_high_col="prev_rth_vah",
-    va_low_col="prev_rth_val",
-    poc_col="prev_rth_poc",
-    prefix="prth",
-)
-
-df = calculate_va_extensions(
-    df,
-    va_high_col="eth_vah",
-    va_low_col="eth_val",
-    poc_col="eth_poc",
-    prefix="eth",
-)
 
 # 1) Make sure 'date' is a datetime column
 if "date" in df.columns:
