@@ -375,7 +375,7 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
             )
 
             fig.add_annotation(
-                x=val + 0.2,
+                x=val + 0.05,
                 y=pct,
                 text=f"{val:.2f}",
                 showarrow=False,
