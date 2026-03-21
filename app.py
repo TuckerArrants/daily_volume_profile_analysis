@@ -288,7 +288,6 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
     Rows: PRTH / ETH
     Cols: Upside (above POC) / Downside (below POC)
     """
-
     configs = [
         {
             "col": "prth_ext_above_poc_va",
@@ -328,11 +327,14 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
     pct_dash   = ["dot", "solid", "dot"]
 
     for cfg in configs:
-        series = df[cfg["col"]].dropna().sort_values()
+        series = df[cfg["col"]].fillna(0).sort_values()
         n = len(series)
+
+        if n == 0:
+            continue
+
         ecdf_y = np.arange(1, n + 1) / n
 
-        # ECDF line
         fig.add_trace(
             go.Scatter(
                 x=series.values,
@@ -345,11 +347,9 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
             row=cfg["row"], col=cfg["col"],
         )
 
-        # Percentile markers
         for pct, color, dash in zip(percentiles, pct_colors, pct_dash):
             val = float(np.quantile(series, pct))
 
-            # Vertical line up to the ECDF curve
             fig.add_trace(
                 go.Scatter(
                     x=[val, val],
@@ -362,7 +362,6 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
                 row=cfg["row"], col=cfg["col"],
             )
 
-            # Horizontal line from y-axis to the curve
             fig.add_trace(
                 go.Scatter(
                     x=[0, val],
@@ -375,7 +374,6 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
                 row=cfg["row"], col=cfg["col"],
             )
 
-            # Label on the curve
             fig.add_annotation(
                 x=val,
                 y=pct,
@@ -399,6 +397,7 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
         gridcolor="rgba(255,255,255,0.06)",
         zerolinecolor="rgba(255,255,255,0.15)",
     )
+
     fig.update_yaxes(
         title_text="Cumulative %",
         tickformat=".0%",
@@ -1127,7 +1126,7 @@ for idx, col in enumerate(rth_model_cols):
     row1[idx].plotly_chart(fig, use_container_width=True)
 
 st.subheader("VA Extension Distributions")
-st.write(df_filtered.columns.tolist())
+
 plot_va_extensions(df_filtered)
 
 st.caption(f"Sample size: {len(df_filtered):,} rows")
