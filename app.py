@@ -1126,7 +1126,7 @@ for idx, col in enumerate(rth_model_cols):
     row1[idx].plotly_chart(fig, use_container_width=True)
 
 st.subheader("VA Extension Distributions")
-
+st.write([c for c in df_filtered.columns if 'ext' in c])
 plot_va_extensions(df_filtered)
 
 st.caption(f"Sample size: {len(df_filtered):,} rows")
