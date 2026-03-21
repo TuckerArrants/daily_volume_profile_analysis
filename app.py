@@ -375,14 +375,13 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
             )
 
             fig.add_annotation(
-                x=val,
+                x=val + 0.05,
                 y=pct,
-                text=f"{val:.2f}  ",
+                text=f"{val:.2f}",
                 showarrow=False,
                 font=dict(size=11, color=color),
-                xanchor="right" if pct == 0.20 else "left",
+                xanchor="left",
                 yanchor="bottom" if pct == 0.20 else "middle",
-                yshift=5 if pct == 0.20 else 0,
                 row=cfg["row"], col=cfg["col"],
             )
 
