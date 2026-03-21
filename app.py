@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, time
 import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import os, io, base64, requests
 
 st.set_page_config(layout='wide')
@@ -157,10 +159,6 @@ def bucket_hm_series(hm: pd.Series, default="NO") -> pd.Series:
     out.loc[mins.isna()] = np.nan
     return out
 
-
-# -------------------------------------------------------
-# Your function, extended
-# -------------------------------------------------------
 def get_hod_lod(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
@@ -242,7 +240,166 @@ def get_prth_to_rth_model(df):
 
     return df
 
+#############################################
+### VA Extensions Functions
+#############################################
+def calculate_va_extensions(
+    df: pd.DataFrame,
+    va_high_col: str,
+    va_low_col: str,
+    poc_col: str,
+    prefix: str,
+    high_col: str = "rdr_high",
+    low_col: str = "rdr_low",
+) -> pd.DataFrame:
+   
+    p = f"{prefix}_"
+    va_range = df[va_high_col] - df[va_low_col]
 
+    # Raw point extensions
+    df[f"{p}ext_above_poc_pts"] = df[high_col] - df[poc_col]
+    df[f"{p}ext_below_poc_pts"] = df[poc_col] - df[low_col]
+    df[f"{p}ext_above_vah_pts"] = (df[high_col] - df[va_high_col]).clip(lower=0)
+    df[f"{p}ext_below_val_pts"] = (df[va_low_col] - df[low_col]).clip(lower=0)
+
+    # VA-normalized extensions
+    df[f"{p}ext_above_poc_va"] = df[f"{p}ext_above_poc_pts"] / va_range
+    df[f"{p}ext_below_poc_va"] = df[f"{p}ext_below_poc_pts"] / va_range
+    df[f"{p}ext_above_vah_va"] = df[f"{p}ext_above_vah_pts"] / va_range
+    df[f"{p}ext_below_val_va"] = df[f"{p}ext_below_val_pts"] / va_range
+
+    return df
+
+def plot_va_extensions(df: pd.DataFrame) -> None:
+    """
+    Plot 4 ECDF distributions of VA extensions with 20/50/80 percentile markers.
+    Rows: PRTH / ETH
+    Cols: Upside (above POC) / Downside (below POC)
+    """
+
+    configs = [
+        {
+            "col": "prth_ext_above_poc_va",
+            "title": "PRTH — Upside Extension",
+            "row": 1, "col": 1,
+            "color": "#4C72B0",
+        },
+        {
+            "col": "prth_ext_below_poc_va",
+            "title": "PRTH — Downside Extension",
+            "row": 1, "col": 2,
+            "color": "#4C72B0",
+        },
+        {
+            "col": "eth_ext_above_poc_va",
+            "title": "ETH — Upside Extension",
+            "row": 2, "col": 1,
+            "color": "#DD8452",
+        },
+        {
+            "col": "eth_ext_below_poc_va",
+            "title": "ETH — Downside Extension",
+            "row": 2, "col": 2,
+            "color": "#DD8452",
+        },
+    ]
+
+    fig = make_subplots(
+        rows=2, cols=2,
+        subplot_titles=[c["title"] for c in configs],
+        vertical_spacing=0.14,
+        horizontal_spacing=0.10,
+    )
+
+    percentiles = [0.20, 0.50, 0.80]
+    pct_colors = ["#aaaaaa", "#ffffff", "#aaaaaa"]
+    pct_dash   = ["dot", "solid", "dot"]
+
+    for cfg in configs:
+        series = df[cfg["col"]].dropna().sort_values()
+        n = len(series)
+        ecdf_y = np.arange(1, n + 1) / n
+
+        # ECDF line
+        fig.add_trace(
+            go.Scatter(
+                x=series.values,
+                y=ecdf_y,
+                mode="lines",
+                line=dict(color=cfg["color"], width=2),
+                showlegend=False,
+                hovertemplate="Extension: %{x:.2f} VA units<br>Percentile: %{y:.0%}<extra></extra>",
+            ),
+            row=cfg["row"], col=cfg["col"],
+        )
+
+        # Percentile markers
+        for pct, color, dash in zip(percentiles, pct_colors, pct_dash):
+            val = float(np.quantile(series, pct))
+
+            # Vertical line up to the ECDF curve
+            fig.add_trace(
+                go.Scatter(
+                    x=[val, val],
+                    y=[0, pct],
+                    mode="lines",
+                    line=dict(color=color, width=1, dash=dash),
+                    showlegend=False,
+                    hoverinfo="skip",
+                ),
+                row=cfg["row"], col=cfg["col"],
+            )
+
+            # Horizontal line from y-axis to the curve
+            fig.add_trace(
+                go.Scatter(
+                    x=[0, val],
+                    y=[pct, pct],
+                    mode="lines",
+                    line=dict(color=color, width=1, dash=dash),
+                    showlegend=False,
+                    hoverinfo="skip",
+                ),
+                row=cfg["row"], col=cfg["col"],
+            )
+
+            # Label on the curve
+            fig.add_annotation(
+                x=val,
+                y=pct,
+                text=f"  {val:.2f}",
+                showarrow=False,
+                font=dict(size=11, color=color),
+                xanchor="left",
+                row=cfg["row"], col=cfg["col"],
+            )
+
+    fig.update_layout(
+        height=700,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#cccccc", size=12),
+        margin=dict(t=60, b=40, l=50, r=30),
+    )
+
+    fig.update_xaxes(
+        title_text="VA Units",
+        gridcolor="rgba(255,255,255,0.06)",
+        zerolinecolor="rgba(255,255,255,0.15)",
+    )
+    fig.update_yaxes(
+        title_text="Cumulative %",
+        tickformat=".0%",
+        gridcolor="rgba(255,255,255,0.06)",
+        zerolinecolor="rgba(255,255,255,0.15)",
+        range=[0, 1],
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+#########################################
+### Data Loading and Processing
+#########################################
 segments = {
     "Globex-Asia":        (   0,  90),
     "Asia":            (  90, 480),
@@ -256,9 +413,6 @@ segments = {
 instrument_options = ["ES", "NQ"]
 selected_instrument = st.sidebar.selectbox("Instrument", instrument_options)
 
-#########################################
-### Data Loading and Processing
-#########################################
 df = load_data_for_instrument(selected_instrument)
 
 df['date'] = pd.to_datetime(df['session_date']).dt.date
@@ -280,6 +434,22 @@ df = get_rth_open_pos(df)
 df = get_prth_to_rth_model(df)
 df = get_rth_open_pos_to_prth_va(df)
 df = get_rth_open_pos_to_eth_va(df)
+
+df = calculate_va_extensions(
+    df,
+    va_high_col="prev_rth_vah",
+    va_low_col="prev_rth_val",
+    poc_col="prev_rth_poc",
+    prefix="prth",
+)
+
+df = calculate_va_extensions(
+    df,
+    va_high_col="eth_vah",
+    va_low_col="eth_val",
+    poc_col="eth_poc",
+    prefix="eth",
+)
 
 rename_map = {'pre_adr' : 'Globex-Asia',
               'adr' : 'Asia',
@@ -946,6 +1116,9 @@ for idx, col in enumerate(rth_model_cols):
     row1[idx].plotly_chart(fig, use_container_width=True)
 
 st.caption(f"Sample size: {len(df_filtered):,} rows")
+
+st.subheader("VA Extension Distributions")
+plot_va_extensions(df_filtered)
 
 session_date_df = df_filtered['session_date']
 csv = session_date_df.to_csv(index=False).encode("utf-8")
