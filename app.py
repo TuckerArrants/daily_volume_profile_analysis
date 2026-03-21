@@ -27,7 +27,7 @@ def calculate_va_extensions(
 
     df[f"{p}ext_above_poc_pts"] = (df[high_col] - df[poc_col]).clip(lower=0)
     df[f"{p}ext_below_poc_pts"] = (df[poc_col] - df[low_col]).clip(lower=0)
-    df[f"{p}ext_above_vah_pts"] = (df[high_col] - df[va_high_col]).clip(lower=0)
+    df[f"{p}ext_above_vah_pts"] = (df[high_col] - df[va_high_col]).clip(lower=0) 
     df[f"{p}ext_below_val_pts"] = (df[va_low_col] - df[low_col]).clip(lower=0)
 
     df[f"{p}ext_above_poc_va"] = df[f"{p}ext_above_poc_pts"] / va_range
