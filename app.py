@@ -381,6 +381,7 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
                 showarrow=False,
                 font=dict(size=11, color=color),
                 xanchor="left",
+                xshift=8 if pct == 0.20 else 0,
                 row=cfg["row"], col=cfg["col"],
             )
 
@@ -396,7 +397,7 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
         title_text="VA Units",
         gridcolor="rgba(255,255,255,0.06)",
         zerolinecolor="rgba(255,255,255,0.15)",
-        range=[0, 10],
+        range=[0, 7],
     )
 
     fig.update_yaxes(
