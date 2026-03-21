@@ -435,6 +435,35 @@ df = get_prth_to_rth_model(df)
 df = get_rth_open_pos_to_prth_va(df)
 df = get_rth_open_pos_to_eth_va(df)
 
+rename_map = {'pre_adr' : 'Globex-Asia',
+              'adr' : 'Asia',
+              'adr_transition' : 'Asia-London',
+              'odr' : 'London',
+              'odr_transition' : 'London-RTH',
+              'rdr' : 'RTH',
+              'untouched' : 'Untouched',
+              'uxp' : 'Upside',
+              'ux' : 'Upside',
+              'u' : 'Upside',
+              'dxp' : 'Downside',
+              'dx' : 'Downside',
+              'd' : 'Downside',
+              'rx' : 'Engulfing',
+              'rc' : 'Inside',
+              'none' : 'None',
+              'long' : 'Long',
+              'short' : 'Short',   
+              'box_formation' : 'IB Formation',
+              'after_box_formation' : 'After IB',
+              'above' : 'Above',
+              'below' : 'Below',
+              'inside' : 'Inside',
+              'upside' : 'Upside',
+              'downside' : 'Downside',
+              'upside_gap' : 'Upside Gap',
+              'downside_gap' : 'Downside Gap',
+              'outside' : 'Outside'
+} 
 categorical_cols = [
     "prev_rdr_to_adr_model", "adr_to_odr_model", "odr_to_rdr_model",
     "rdr_to_prdr_open", "rdr_open_to_prth_va", "rdr_open_to_eth_va",
