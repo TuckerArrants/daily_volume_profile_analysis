@@ -290,25 +290,25 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
     """
     configs = [
         {
-            "col": "prth_ext_above_poc_va",
+            "column": "prth_ext_above_poc_va",
             "title": "PRTH — Upside Extension",
             "row": 1, "col": 1,
             "color": "#4C72B0",
         },
         {
-            "col": "prth_ext_below_poc_va",
+            "column": "prth_ext_below_poc_va",
             "title": "PRTH — Downside Extension",
             "row": 1, "col": 2,
             "color": "#4C72B0",
         },
         {
-            "col": "eth_ext_above_poc_va",
+            "column": "eth_ext_above_poc_va",
             "title": "ETH — Upside Extension",
             "row": 2, "col": 1,
             "color": "#DD8452",
         },
         {
-            "col": "eth_ext_below_poc_va",
+            "column": "eth_ext_below_poc_va",
             "title": "ETH — Downside Extension",
             "row": 2, "col": 2,
             "color": "#DD8452",
@@ -327,7 +327,7 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
     pct_dash   = ["dot", "solid", "dot"]
 
     for cfg in configs:
-        series = df[cfg["col"]].fillna(0).sort_values()
+        series = df[cfg["column"]].fillna(0).sort_values()
         n = len(series)
 
         if n == 0:
