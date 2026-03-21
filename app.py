@@ -323,7 +323,7 @@ def plot_va_extensions(df: pd.DataFrame) -> None:
     )
 
     percentiles = [0.20, 0.50, 0.80]
-    pct_colors = ["#aaaaaa", "#ffffff", "#aaaaaa"]
+    pct_colors = ["#888888", "#333333", "#888888"]
     pct_dash   = ["dot", "solid", "dot"]
 
     for cfg in configs:
