@@ -22,7 +22,7 @@ This tool computes and visualizes statistical distributions of price behavior re
 **Initial Balance**
 - IB True Rate across Asia, London, and RTH sessions
 - IB Color (directional bias) per session
-- IB Break Direction per session
+- IB Break Direction per session (break defined as a 1m close above/below IB range)
 - Session IB model comparisons: PRTH→Asia, Asia→London, London→RTH
 
 **Session Structure**
