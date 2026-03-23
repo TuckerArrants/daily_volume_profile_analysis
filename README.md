@@ -76,9 +76,3 @@ J. Peter Steidlmayer developed Market Profile in the 1980s in collaboration with
 This project explores these value areas, extending the framework across session handoffs (ETH → RTH, Asia → London → RTH) and measuring extensions in volatility-normalized units rather than fixed price distances.
 
 ---
-
-## References
-
-- Steidlmayer, J. P. & Koy, K. (1986). *Markets and Market Logic.* Chicago: Porcupine Press.
-- Dalton, J., Jones, E., & Dalton, R. (1990). *Mind Over Markets.* Chicago: Probus.
-- Steidlmayer, J. P. (2003). *Steidlmayer on Markets: Trading with Market Profile.* Wiley.
